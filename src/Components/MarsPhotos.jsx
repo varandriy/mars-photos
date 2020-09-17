@@ -26,7 +26,7 @@ const Component = ({ photos }) => {
             {
                 visible < photos.length &&
                 <div>
-                    <button style={{ backgroundColor: "#F9AA33" }} onClick={handleChangeVisible}>Load more</button>git init
+                    <button style={{ backgroundColor: "#F9AA33" }} onClick={handleChangeVisible}>Load more</button>
                 </div>
 
             }
