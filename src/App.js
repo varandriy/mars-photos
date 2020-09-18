@@ -1,11 +1,10 @@
 import React from 'react';
-import './App.css';
-import {MarsPhotos} from './Components/MarsPhotos';
+import { Photos } from './Components/Photos';
 
 function App() {
   return (
     <div className="app">
-     <MarsPhotos/>
+      <Photos />
     </div>
   );
 }

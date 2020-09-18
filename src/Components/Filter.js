@@ -4,9 +4,9 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import { fetchPhotos } from '../redux/actions/marsActions'
-import { connect } from "react-redux";
-import { userAPI } from '../Api/api'
+import { fetchPhotos } from '../redux/actions/photosActions';
+import { connect } from 'react-redux';
+import { userAPI } from '../api/api';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -19,59 +19,66 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Component({ fetchPhotos, setVisible }) {
-  const classes = useStyles();
-
+function Component({ fetchPhotos }) {
   const [rover, setRover] = React.useState('');
   const [camera, setCamera] = React.useState('');
   const [sol, setSol] = React.useState('');
-  const [solValues, setSolValues] = React.useState([])
-  const [cameraValues, setCameraValues] = React.useState([])
+  const [solValues, setSolValues] = React.useState([]);
+  const [cameraValues, setCameraValues] = React.useState([]);
   const [manifest, setManifest] = React.useState(null);
+  const classes = useStyles();
+  const roverValues = ['Curiosity', 'Opportunity', 'Spirit'];
 
-  const handleChangeRover = async (e) => {
-    setRover(e.target.value);
+  const handleRoverChange = async (e) => {
+    const rover = e.target.value;
+    setRover(rover);
     setSolValues([]);
     setCameraValues([]);
-    setSol("");
-    setCamera("");
-    const manifest = await userAPI.getManifest(e.target.value);
+    setSol('');
+    setCamera('');
+
+    const manifest = await userAPI.getManifest(rover);
     setManifest(manifest);
-    const solValues = Object.keys(Object.fromEntries(manifest.data.photo_manifest.photos.map(photo => [photo.sol])))
-    setSolValues(solValues.filter((v, i) => i % 100 === 0));
-    setVisible(1);
+
+    const { photos } = manifest.data.photo_manifest;
+    const solValues = photos.map(photo => photo.sol).filter((v, i) => i % 100 === 0);
+    setSolValues(solValues);
   };
 
-  const handleChangeCamera = (e) => {
-    setCamera(e.target.value);
-    fetchPhotos(rover, e.target.value, sol);
-    setVisible(1);
+  const handleCameraChange = (e) => {
+    const camera = e.target.value;
+    setCamera(camera);
+    fetchPhotos(rover, camera, sol);
   };
+
   const handleChangeSol = (e) => {
-    setSol(e.target.value);
+    const sol = e.target.value;
+    setSol(sol);
+
     if (manifest) {
-      const cameraValues = manifest.data.photo_manifest.photos.find((photo) => photo.sol === Number(e.target.value)).cameras
+      const { photos } = manifest.data.photo_manifest;
+      const cameraValues = photos.find((photo) => photo.sol === Number(e.target.value)).cameras;
       setCameraValues(cameraValues);
     }
-    setVisible(1);
   };
 
   return (
-    <div>
+    <div style={{ margin: 'auto' }}>
       <FormControl className={classes.formControl}>
         <InputLabel id="demo-controlled-open-select-label">Select Rover</InputLabel>
         <Select
           labelId="demo-controlled-open-select-label"
           id="demo-controlled-open-select"
           value={rover}
-          onChange={handleChangeRover}
+          onChange={handleRoverChange}
         >
-          <MenuItem value="">
-            <em>None</em>
-          </MenuItem>
-          <MenuItem value={'Curiosity'}>Curiosity</MenuItem>
-          <MenuItem value={'Opportunity'}>Opportunity</MenuItem>
-          <MenuItem value={'Spirit'}>Spirit</MenuItem>
+          {
+            roverValues.map((rover) => {
+              return (
+                <MenuItem key={rover} value={rover}>{rover}</MenuItem>
+              );
+            })
+          }
         </Select>
       </FormControl>
 
@@ -83,11 +90,13 @@ function Component({ fetchPhotos, setVisible }) {
           value={sol}
           onChange={handleChangeSol}
         >
-          {solValues.map(sol => {
-            return (
-              <MenuItem key={sol} value={sol}>{sol}</MenuItem>
-            )
-          })}
+          {
+            solValues.map(sol => {
+              return (
+                <MenuItem key={sol} value={sol}>{sol}</MenuItem>
+              );
+            })
+          }
         </Select>
       </FormControl>
 
@@ -97,19 +106,19 @@ function Component({ fetchPhotos, setVisible }) {
           labelId="demo-controlled-open-select-label"
           id="demo-controlled-open-select"
           value={camera}
-          onChange={handleChangeCamera}
+          onChange={handleCameraChange}
         >
-          {cameraValues.map((camera) => {
-            return <MenuItem key={camera} value={camera}>{camera}</MenuItem>
-          })}
+          {
+            cameraValues.map((camera) => {
+              return <MenuItem key={camera} value={camera}>{camera}</MenuItem>;
+            })
+          }
         </Select>
       </FormControl>
     </div>
   );
 }
-const mapStateToProps = (state) => {
-  return {};
-};
+
 const mapDispatchToProps = { fetchPhotos };
 
-export const CameraValues = connect(mapStateToProps, mapDispatchToProps)(Component);
+export const Filter = connect(null, mapDispatchToProps)(Component);

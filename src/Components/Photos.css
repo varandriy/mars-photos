@@ -1,0 +1,24 @@
+.main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #344955;
+    margin-bottom: 20px;
+}
+
+.selects {
+    border: 2px solid black;
+    background-color: #F9AA33;
+    margin-bottom: 5px;
+    width: 100%;
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+}
+
+.photo {
+    margin-bottom: 5px;
+    border: 2px solid black;
+}

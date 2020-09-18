@@ -1,6 +1,6 @@
-import {combineReducers} from 'redux';
-import {marsReducer} from './marsReducer'
+import { combineReducers } from 'redux';
+import { photosReducer } from './photosReducer';
 
 export const mainReducer = combineReducers({
-    photos: marsReducer
-})
+  photos: photosReducer,
+});
